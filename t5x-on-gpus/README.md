@@ -63,3 +63,10 @@ JAX local devices:[StreamExecutorGpuDevice(id=2, process_index=1, slice_index=1)
 [4. 4.]
 Hooray ...
 ```
+
+
+To delete the job
+
+```
+kubectl delete -k ./
+```
