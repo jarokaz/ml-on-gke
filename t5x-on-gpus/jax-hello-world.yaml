@@ -1,13 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: headless-svc
+spec:
+  clusterIP: None # clusterIP must be None to create a headless service
+  selector:
+    job-name: jax-hello-world # must match Job name
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: 'jax-hello-world'
+  name: jax-hello-world
 spec:
   completions: 1
   parallelism: 1
   completionMode: Indexed
   template:
     spec:
+      subdomain: headless-svc
       nodeSelector:
         cloud.google.com/gke-accelerator: nvidia-tesla-t4
       restartPolicy: Never
@@ -25,7 +35,5 @@ spec:
             memory: "30Gi"    
         env:
         - name: NUM_PROCESSES
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.completions
+          value: "1"
 

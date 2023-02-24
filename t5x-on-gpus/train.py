@@ -15,6 +15,7 @@
 
 import jax
 import os
+import socket
 
 from absl import flags
 from absl import app
@@ -24,9 +25,13 @@ flags.DEFINE_integer('process_id', 0, 'Process ID')
 FLAGS = flags.FLAGS
 
 def _main(argv):
+
+    coordinator_fqdn = 'jax-hellow-world-0.headless-svc'
+    
     print(f'jax devices:{jax.devices()}')
     print(f'Process id: {os.getenv("JOB_COMPLETION_INDEX")}')
     print(f'Number processes: {os.getenv("NUM_PROCESSES")}')
+    print(f'IP address: {socket.gethostbyname(coordinator_fqdn)}')
 
 if __name__ == "__main__":
     app.run(_main)
