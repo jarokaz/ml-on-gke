@@ -20,13 +20,14 @@ spec:
   completions: 1
   parallelism: 1
   completionMode: Indexed
+  backoffLimit: 1
   template:
     spec:
       subdomain: headless-svc
       restartPolicy: Never
       containers:
       - name: jax-worker
-        image: gcr.io/jk-mlops-dev/jax-sandbox
+        image: gcr.io/jk-mlops-dev/jax-sandbox:latest
         command: ["python", "train.py"]
         args:
         - --num_processes
@@ -34,4 +35,8 @@ spec:
         - --job_name
         - WILL_BE_REPLACED
         - --sub_domain
-        - WILL_BE_REPLACED 
+        - WILL_BE_REPLACED
+        - --coordinator_port
+        - WILL_BE_REPLACED
+        ports:
+        - containerPort: 1234 

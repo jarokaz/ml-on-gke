@@ -39,6 +39,10 @@ patches:
     kind: Job
     version: v1
 
+images:
+- name: gcr.io/jk-mlops-dev/jax-sandbox:latest
+  newName: gcr.io/jk-mlops-dev/jax-sandbox
+  newTag: latest
 
 replacements:
 - source:
@@ -81,6 +85,16 @@ replacements:
     fieldPaths:
     - spec.template.spec.containers.[name=jax-worker].args.1
     - spec.parallelism
+- source:
+    kind: Job
+    version: v1
+    fieldPath: spec.template.spec.containers.[name=jax-worker].ports.0.containerPort
+  targets:
+  - select: 
+      kind: Job
+      version: v1
+    fieldPaths:
+    - spec.template.spec.containers.[name=jax-worker].args.7
 
 
 

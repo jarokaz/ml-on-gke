@@ -23,9 +23,6 @@ spec:
         - key: nvidia.com/gpu
           operator: Exists
           effect: NoSchedule
-#        - key: ML_JOB
-#          operator: Exists
-#          effect: PreferNoSchedule
       containers:
       - name: jax-worker
         resources:

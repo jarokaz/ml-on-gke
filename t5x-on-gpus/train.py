@@ -26,15 +26,15 @@ from absl import logging
 flags.DEFINE_integer('num_processes', 1, 'Number of processes')
 flags.DEFINE_string('job_name', None, 'Job name')
 flags.DEFINE_string('sub_domain', None, 'Service sub domain')
+flags.DEFINE_string('coordinator_port', None, 'Port the coordinator listens on')
 flags.mark_flag_as_required('job_name')
 flags.mark_flag_as_required('sub_domain')
+flags.mark_flag_as_required('coordinator_port')
 
 FLAGS = flags.FLAGS
 
-def _main(argv):
-
-    job_completion_index = os.getenv("JOB_COMPLETION_INDEX")
-    coordinator_fqdn = f'{FLAGS.job_name}-{job_completion_index}.{FLAGS.sub_domain}'
+def _get_coordinator_ip_address(job_name, sub_domain):
+    coordinator_fqdn = f'{FLAGS.job_name}-0.{FLAGS.sub_domain}'
     print(f'Coordinator host name: {coordinator_fqdn}') 
 
     for retry_attempt in range(5):
@@ -45,9 +45,28 @@ def _main(argv):
             print(f'Failed to resolve: {coordinator_ipaddress}. Trying again in a second ...') 
         else:
             break
-
+    
     print(f'Coordiantor IP address: {coordinator_ipaddress}')
-    print(f'jax devices:{jax.devices()}')
+
+    return coordinator_ipaddress
+
+def _main(argv):
+
+    process_id = int(os.getenv("JOB_COMPLETION_INDEX"))
+    num_processes = FLAGS.num_processes
+    coordinator_address = _get_coordinator_ip_address(FLAGS.job_name, FLAGS.sub_domain)
+    coordinator_address = f'{coordinator_address}:{FLAGS.coordinator_port}'
+    
+    jax.distributed.initialize(coordinator_address=coordinator_address,
+                               num_processes=num_processes,
+                               process_id=process_id)
+
+    print(f'JAX global devices:{jax.devices()}')
+    print(f'JAX local devices:{jax.local_devices()}')
+
+    xs = jax.numpy.ones(jax.local_device_count())
+    print(jax.pmap(lambda x: jax.lax.psum(x, 'i'), axis_name='i')(xs))
+    print('Hooray ...')
 
 if __name__ == "__main__":
     app.run(_main)
