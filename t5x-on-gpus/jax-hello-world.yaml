@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: 'jax-hello-world'
+spec:
+  completions: 1
+  parallelism: 1
+  completionMode: Indexed
+  template:
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-accelerator: nvidia-tesla-t4
+      restartPolicy: Never
+      containers:
+      - name: 'jax-worker'
+        image: 'gcr.io/jk-mlops-dev/jax-sandbox'
+        command: ["python"]
+        args:
+        - train.py
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+          requests:
+            cpu: "8"
+            memory: "30Gi"    
+        env:
+        - name: NUM_PROCESSES
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.completions
+
