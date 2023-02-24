@@ -12,12 +12,21 @@ kind: Job
 metadata:
   name: example-job
 spec:
-  completions: 3
-  parallelism: 3
+  completions: 2
+  parallelism: 2
   completionMode: Indexed
   template:
     spec:
       subdomain: headless-svc # has to match Service name
+      nodeSelector:
+        cloud.google.com/gke-accelerator: nvidia-tesla-t4
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
+        - key: ML_JOB
+          operator: Exists
+          effect: PreferNoSchedule
       restartPolicy: Never
       containers:
       - name: example-workload
@@ -26,7 +35,7 @@ spec:
         - bash
         - -c
         - |
-          for i in 0 1 2
+          for i in 0 1 
           do
             gotStatus="-1"
             wantStatus="0"             

@@ -16,22 +16,38 @@
 import jax
 import os
 import socket
+import time
+
 
 from absl import flags
 from absl import app
 from absl import logging
 
-flags.DEFINE_integer('process_id', 0, 'Process ID')
+flags.DEFINE_integer('num_processes', 1, 'Number of processes')
+flags.DEFINE_string('job_name', None, 'Job name')
+flags.DEFINE_string('sub_domain', None, 'Service sub domain')
+flags.mark_flag_as_required('job_name')
+flags.mark_flag_as_required('sub_domain')
+
 FLAGS = flags.FLAGS
 
 def _main(argv):
 
-    coordinator_fqdn = 'jax-hellow-world-0.headless-svc'
-    
+    job_completion_index = os.getenv("JOB_COMPLETION_INDEX")
+    coordinator_fqdn = f'{FLAGS.job_name}-{job_completion_index}.{FLAGS.sub_domain}'
+    print(f'Coordinator host name: {coordinator_fqdn}') 
+
+    for retry_attempt in range(5):
+        try:
+            time.sleep(1)
+            coordinator_ipaddress = socket.gethostbyname(coordinator_fqdn)
+        except socket.gaierror:
+            print(f'Failed to resolve: {coordinator_ipaddress}. Trying again in a second ...') 
+        else:
+            break
+
+    print(f'Coordiantor IP address: {coordinator_ipaddress}')
     print(f'jax devices:{jax.devices()}')
-    print(f'Process id: {os.getenv("JOB_COMPLETION_INDEX")}')
-    print(f'Number processes: {os.getenv("NUM_PROCESSES")}')
-    print(f'IP address: {socket.gethostbyname(coordinator_fqdn)}')
 
 if __name__ == "__main__":
     app.run(_main)
