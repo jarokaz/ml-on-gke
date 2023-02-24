@@ -35,9 +35,3 @@ spec:
         - WILL_BE_REPLACED
         - --sub_domain
         - WILL_BE_REPLACED 
-#        resources:
-#          limits:
-#            nvidia.com/gpu: 1
-#          requests:
-#            cpu: "8"
-#            memory: "30Gi"    

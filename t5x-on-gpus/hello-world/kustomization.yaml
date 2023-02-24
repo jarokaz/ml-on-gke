@@ -25,9 +25,12 @@ patches:
 - path: job-patch.yaml
 - patch: |-
     - op: replace
+      path: /spec/completions
+      value: 2
+    - op: replace
       path: /metadata/name
       value: jax-hello-world
-    - op: replace
+    - op: add 
       path: /spec/template/spec/nodeSelector
       value: 
          cloud.google.com/gke-accelerator: 
@@ -77,6 +80,7 @@ replacements:
       version: v1
     fieldPaths:
     - spec.template.spec.containers.[name=jax-worker].args.1
+    - spec.parallelism
 
 
 

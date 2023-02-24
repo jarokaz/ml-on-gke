@@ -19,17 +19,15 @@ metadata:
 spec:
   template:
     spec:
-      nodeSelector:
-        cloud.google.com/gke-accelerator: nvidia-tesla-a100
       tolerations:
         - key: nvidia.com/gpu
           operator: Exists
           effect: NoSchedule
-        - key: ML_JOB
-          operator: Exists
-          effect: PreferNoSchedule
+#        - key: ML_JOB
+#          operator: Exists
+#          effect: PreferNoSchedule
       containers:
       - name: jax-worker
         resources:
           limits:
-            nvidia.com/gpu: 1
+            nvidia.com/gpu: 2
