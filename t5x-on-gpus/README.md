@@ -25,8 +25,8 @@ gcloud container clusters get-credentials $CLUSTER_NAME \
 ```
 cd ~/ml-on-gke/t5x-on-gke
 
-docker build -t gcr.io/jk-mlops-dev/jax-sandbox .
-docker push gcr.io/jk-mlops-dev/jax-sandbox 
+docker build -t <YOUR IMAGE URI> .
+docker push <YOUR IMAGE URI> 
 ```
 
 ### Run a job
