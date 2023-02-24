@@ -56,10 +56,11 @@ def _main(argv):
     num_processes = FLAGS.num_processes
     coordinator_address = _get_coordinator_ip_address(FLAGS.job_name, FLAGS.sub_domain)
     coordinator_address = f'{coordinator_address}:{FLAGS.coordinator_port}'
-    
-    jax.distributed.initialize(coordinator_address=coordinator_address,
-                               num_processes=num_processes,
-                               process_id=process_id)
+
+    if num_processes > 1: 
+        jax.distributed.initialize(coordinator_address=coordinator_address,
+                                   num_processes=num_processes,
+                                   process_id=process_id)
 
     print(f'JAX global devices:{jax.devices()}')
     print(f'JAX local devices:{jax.local_devices()}')
