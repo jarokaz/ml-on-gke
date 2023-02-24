@@ -4,7 +4,7 @@
 
 TBD
 
-- Create a Standard cluster. (There are issue with DNS in Autopilot. When resolved an Autopilot will be a perfect fit for this scenario)
+- Create a Standard cluster. (There are issue with DNS in Autopilot. When resolved Autopilot will be a perfect fit for this scenario)
 - Create a GPU node pool. Two nodes. Each equipped with two T4 GPUs.
 
 
