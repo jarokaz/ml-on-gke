@@ -61,7 +61,7 @@ if [ -z ${JOB_COMPLETION_INDEX+x} ]; then
     exit_handler 1 "$LINENO" 
 fi
 
-long_flags=model_dir:,gin_file:,gin_bindings:,gin_search_paths:,tfds_data_dir:,seqio_additional_cache_dirs:,process_count:
+long_flags=run_mode:,model_dir:,gin_file:,gin_bindings:,gin_search_paths:,tfds_data_dir:,seqio_additional_cache_dirs:,process_count:
 parsed_argumenta=$(getopt  --options '' --long "$long_flags" -- "$@")
 valid_argumentS=$?
 
@@ -74,6 +74,7 @@ command_line_parameters=()
 eval set -- "$parsed_argumenta"
 while [ : ]; do
     case "$1" in
+    --run_mode)                    run_mode=$2                                        ; shift 2 ;;
     --model_dir)                   model_dir=$2                                       ; shift 2 ;;
     --tfds_data_dir)               command_line_parameters+=("--tfds_data_dir=$2")    ; shift 2 ;;
     --gin_file)                    command_line_parameters+=("--gin_file=$2")         ; shift 2 ;;
@@ -86,16 +87,33 @@ while [ : ]; do
 done
 
 
+
 time_stamp=$(date +"%m%d%Y-%H%M%S")
 command_line_parameters+=("--gin.MODEL_DIR=\"${model_dir}/${time_stamp}\"")
 
+echo $run_mode
+
 if [ "$PROCESS_COUNT" -gt 1 ]; then
+    if [ "$run_mode" != train ]; then
+        echo "Multi-host jobs are only supported for the Train run mode"
+        exit_handler 1 "$LINENO"
+    fi
     get_coordinator_ip_address
     command_line_parameters+=( "--process_count=$PROCESS_COUNT" "--multiprocess_gpu" "--process_index=$JOB_COMPLETION_INDEX" "--coordinator_address=$coordinator_ip_address:$COORDINATOR_PORT")
 fi
 
-echo "Invoking train.py ${command_line_parameters[@]}"
 
 T5X_DIR=/t5x/
-python3 ${T5X_DIR}t5x/train.py "${command_line_parameters[@]}"
+
+if [ "$run_mode" != train ]; then
+    command_line_parameters+=("--run_mode=$run_mode")
+    script="${T5X_DIR}t5x/main.py"
+else
+    script="${T5X_DIR}t5x/train.py"
+fi
+
+echo "Starting the job with: $script $command_line_parameters"
+
+python3 "$script" "${command_line_parameters[@]}" 
+
 

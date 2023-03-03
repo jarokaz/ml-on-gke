@@ -20,7 +20,7 @@ spec:
   completions: 1
   parallelism: 1
   completionMode: Indexed
-  backoffLimit: 1
+  backoffLimit: 0
   template:
     spec:
       subdomain: headless-svc

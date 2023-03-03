@@ -30,6 +30,8 @@ spec:
       containers:
       - name: jax-worker
         args:
+        - --run_mode
+        - train
         - --model_dir
         - gs://jk-gke-t5x-staging/jobs
         - --gin_file 
