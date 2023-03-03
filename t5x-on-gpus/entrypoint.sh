@@ -86,10 +86,9 @@ while [ : ]; do
     esac
 done
 
-
-
 time_stamp=$(date +"%m%d%Y-%H%M%S")
-command_line_parameters+=("--gin.MODEL_DIR=\"${model_dir}/${time_stamp}\"")
+job_dir="${model_dir}/${time_stamp}"
+command_line_parameters+=("--gin.MODEL_DIR=\"$job_dir\"")
 
 echo $run_mode
 
@@ -114,6 +113,9 @@ fi
 
 echo "Starting the job with: $script $command_line_parameters"
 
+echo "******** Saving job artifacts to:  $job_dir"
+
 python3 "$script" "${command_line_parameters[@]}" 
 
+echo "Job artifacts can be found in: $job_dir"
 

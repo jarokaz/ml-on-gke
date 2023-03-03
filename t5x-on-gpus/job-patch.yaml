@@ -40,6 +40,8 @@ spec:
         - gs://jk-gke-t5x-staging/datasets
         - --gin_bindings
         - USE_CACHED_TASKS=False 
+        - --gin_bindings
+        - TRAIN_STEPS=50
         resources:
           limits:
             nvidia.com/gpu: 2

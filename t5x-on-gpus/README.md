@@ -52,12 +52,6 @@ docker push <YOUR IMAGE URI>
 ```
 cd ~/ml-on-gke/t5x-on-gke/
 
-Copy the `finetune_t511_base_wmt.gin` to a location on GCS
-
-```
-gsutil cp configs/finetune_t511_base_wmt.gin gs://${BUCKET_NAME}/job_configs/
-```
-
 ```
 
 Update `kustomization.yaml` 
@@ -65,9 +59,12 @@ Update `kustomization.yaml`
 - your job name
 
 
-Update `job-path.yaml` with your paths to:
+Update `job-path.yaml` with your T5X job parameters. E.g. :
+- run_mode
 - tfds_data_dir
 - gin_file
+- model_dir
+- etc.
 
 
 ```
@@ -78,23 +75,6 @@ To verify. Get pods
 
 ```
 kubectl get pods
-```
-
-Display logs for the pods after they complete running. You should see something similar to:
-
-```
-(base) jarekk@jk-tx5-dev:~$ kubectl logs jax-hello-world-1-d4ld4
-I0224 22:44:20.062100 140423841105728 distributed.py:79] Connecting to JAX distributed service on 10.108.4.20:1234
-I0224 22:44:21.066458 140423841105728 xla_bridge.py:355] Unable to initialize backend 'tpu_driver': NOT_FOUND: Unable to find driver in registry given worker: 
-I0224 22:44:21.579067 140423841105728 xla_bridge.py:355] Unable to initialize backend 'rocm': NOT_FOUND: Could not find registered platform with name: "rocm". Available platform names are: Interpreter Host CUDA
-I0224 22:44:21.579529 140423841105728 xla_bridge.py:355] Unable to initialize backend 'tpu': module 'jaxlib.xla_extension' has no attribute 'get_tpu_client'
-I0224 22:44:21.579663 140423841105728 xla_bridge.py:355] Unable to initialize backend 'plugin': xla_extension has no attributes named get_plugin_device_client. Compile TensorFlow with //tensorflow/compiler/xla/python:enable_plugin_device set to true (defaults to false) to enable this.
-Coordinator host name: jax-hello-world-0.headless-svc
-Coordiantor IP address: 10.108.4.20
-JAX global devices:[StreamExecutorGpuDevice(id=0, process_index=0, slice_index=0), StreamExecutorGpuDevice(id=1, process_index=0, slice_index=0), StreamExecutorGpuDevice(id=2, process_index=1, slice_index=1), StreamExecutorGpuDevice(id=3, process_index=1, slice_index=1)]
-JAX local devices:[StreamExecutorGpuDevice(id=2, process_index=1, slice_index=1), StreamExecutorGpuDevice(id=3, process_index=1, slice_index=1)]
-[4. 4.]
-Hooray ...
 ```
 
 
