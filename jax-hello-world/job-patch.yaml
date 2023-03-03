@@ -17,14 +17,30 @@ kind: Job
 metadata:
   name: job-name 
 spec:
+  completions: 2
+  parallelism: 2
   template:
     spec:
+      nodeSelector:
+        cloud.google.com/gke-accelerator: nvidia-tesla-t4
       tolerations:
         - key: nvidia.com/gpu
           operator: Exists
           effect: NoSchedule
       containers:
       - name: jax-worker
+        args:
+        - --gin_file 
+        - test.gin
+        - --tfds_data_dir
+        - tfds_data_dir
+        - --gin_bindings
+        - gin_bindings
+        - --gin_search_paths
+        - search_paths
         resources:
           limits:
             nvidia.com/gpu: 2
+          requests:
+            cpu: "7"
+            memory: "24Gi"
