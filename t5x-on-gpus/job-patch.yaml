@@ -41,7 +41,9 @@ spec:
         - --gin_bindings
         - USE_CACHED_TASKS=False 
         - --gin_bindings
-        - TRAIN_STEPS=1_000_100
+        - TRAIN_STEPS=1_000_600
+        - --gin_bindings
+        - EVAL_PERIOD=200
         resources:
           limits:
             nvidia.com/gpu: 2
