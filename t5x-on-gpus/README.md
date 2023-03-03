@@ -6,6 +6,7 @@ TBD
 
 - Create a Standard cluster. (There are issue with DNS in Autopilot. When resolved Autopilot will be a perfect fit for this scenario)
 - Create a GPU node pool. Two nodes. Each equipped with two T4 GPUs.
+- Create a GCS bucket for jobs staging
 
 
 ### Connect to the cluster
@@ -17,10 +18,26 @@ gcloud container clusters get-credentials $CLUSTER_NAME \
 ```
 
 
-## Running JAX Hello World
+## Running a simple T5X job
 
+### Install TFDS
 
-### Build JAX docker container
+```
+pip install  tfds-nightly 
+```
+
+### Prepare the `wmt_t2t_translate` dataset
+
+```
+BUCKET_NAME=<YOUR_BUCKET_NAME>
+export TFDS_DATA_DIR=gs://${BUCKET_NAME}/datasets
+```
+
+```
+tfds build --data_dir $TFDS_DATA_DIR --experimental_latest_version wmt_t2t_translate
+```
+
+### Build T5X docker container
 
 ```
 cd ~/ml-on-gke/t5x-on-gke
@@ -29,13 +46,29 @@ docker build -t <YOUR IMAGE URI> .
 docker push <YOUR IMAGE URI> 
 ```
 
+
 ### Run a job
 
 ```
-cd ~/ml-on-gke/t5x-on-gke/hello-world
+cd ~/ml-on-gke/t5x-on-gke/
+
+Copy the `finetune_t511_base_wmt.gin` to a location on GCS
+
+```
+gsutil cp configs/finetune_t511_base_wmt.gin gs://${BUCKET_NAME}/job_configs/
 ```
 
-Update `kustomization.yaml` with your image URI.
+```
+
+Update `kustomization.yaml` 
+- with your image URI.
+- your job name
+
+
+Update `job-path.yaml` with your paths to:
+- tfds_data_dir
+- gin_file
+
 
 ```
 kubectl apply -k ./
