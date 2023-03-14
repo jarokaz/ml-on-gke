@@ -59,7 +59,7 @@ Update `kustomization.yaml`
 - your job name
 
 
-Update `job-path.yaml` with your T5X job parameters. E.g. :
+Update `job-patch.yaml` with your T5X job parameters. E.g. :
 - run_mode
 - tfds_data_dir
 - gin_file
